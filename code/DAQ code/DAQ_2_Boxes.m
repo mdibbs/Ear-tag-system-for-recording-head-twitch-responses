@@ -8,6 +8,7 @@
 %% Creating DAQ session tracking running voltage for specified period of time
     s=daq.createSession('ni'); % In order to begin a NI DAQ session
     addAnalogInputChannel(s,'Dev1',0,'Voltage'); % Adding analog input channel "0"
+    addAnalogInputChannel(s,'Dev1',1,'Voltage');
     s.DurationInSeconds=600; % This is the duration of the recording in seconds.
     data=s.startForeground(); % The data set we will use in this code is called "data."
 %% Defining processing and detection parameters
@@ -28,7 +29,8 @@
     f_high = designfilt('bandpassiir','FilterOrder',20, ...
         'HalfPowerFrequency1',bpL,'HalfPowerFrequency2',bpH, ...
         'SampleRate',Fs); % Butterworth band-pass filter
-    data_h = filtfilt(f_high,data); % Band-passing the raw data
+    
+    data_h = filtfilt(f_high,data(:,1)); % Band-passing the raw data on Box 
 
 %% Baseline correction and tranformation to absolute values
 
@@ -63,11 +65,65 @@
     text(1,0.3,txt);
     xlabel('Time (ms)');
     ylabel('Signal (|V|)');
-    s=milliseconds(loch2);
-    s.Format='mm:ss.SSS';
-    X='The time points of the head twitches are:';
+    title('Box 1');
+    t=milliseconds(loch2);
+    t.Format='mm:ss.SSS';
+    X='The time points of the head twitches for Box 1 are:';
     disp(X);
-    disp(s);
+    disp(t);
+    save data.mat data
+    % To load the data on a different computer, type load('data.mat').
+    % Make sure not to overwrite the data.mat file (i.e., don't re-run the
+    % DAQ until the data.mat file has been exported).
+    
+    %% For session 2
+%% Applying a Butterworth band-pass filter to the raw data
+
+    f_high = designfilt('bandpassiir','FilterOrder',20, ...
+        'HalfPowerFrequency1',bpL,'HalfPowerFrequency2',bpH, ...
+        'SampleRate',Fs); % Butterworth band-pass filter
+    
+    data_h = filtfilt(f_high,data(:,2)); % Band-passing the raw data on Box 
+
+%% Baseline correction and tranformation to absolute values
+
+    Mh = mean(data_h); % Mean of filtered data
+    data_h = data_h - Mh; % Approaching the baseline to an average of 0
+    absh = abs(data_h); % Absolute value transformation
+
+%% Setting the threshold
+
+    sd = std(data_h); % SD of the band-passed data
+
+    if sd * nSD > Ttv % Conditional for setting the value of the threshold
+        threshold = Ttv; % Top threshold value for datasets with higher SD
+    else
+        threshold = sd * nSD; % Threshold set to n-fold SD (datasets with lower SD)
+    end
+
+%% Unconditional detection of local maxima
+
+    [pksh,loch] = findpeaks(absh); % Prominence of local maxima stored in "pksh", their time indices are stored in "loch"
+
+%% Conditional detection of local maxima for identification of HTR events
+
+    [pksh2,loch2,wh2] = findpeaks(pksh,loch,'MinPeakHeight',threshold,'MinPeakDist',mpd,'MaxPeakWidth',Mpw); % Prominence, time position and width of local maxima --applied over the previous local maxima detection-- stored if the detection parameters are met. In other words, if a HTR event is detected.
+    % "pksh2" contains the prominence (V) of each HTR event detected
+    % "loch2" contains the time (ms) of occurrence of each HTR event detected.
+    % This are the timestamps used for matching visually identified events.
+    % "wh2" contains the width (ms) of each HTR event detected
+    figure();
+    findpeaks(pksh,loch,'MinPeakHeight',threshold,'MinPeakDist',mpd,'MaxPeakWidth',Mpw);
+    txt=['Number of peaks is ',num2str(size(loch2,1))]; % Pastes in words on the graph the number of peaks (HTR events) detected by the code
+    text(1,0.3,txt);
+    xlabel('Time (ms)');
+    ylabel('Signal (|V|)');
+    title('Box 2');
+    t=milliseconds(loch2);
+    t.Format='mm:ss.SSS';
+    X='The time points of the head twitches for Box 2 are:';
+    disp(X);
+    disp(t);
     save data.mat data
     % To load the data on a different computer, type load('data.mat').
     % Make sure not to overwrite the data.mat file (i.e., don't re-run the
