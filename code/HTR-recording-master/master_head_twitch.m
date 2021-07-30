@@ -28,10 +28,10 @@ save_path = 'C:\Users\md2373\Documents\MATLAB\Data';
 % if binning = 4, max ROI: 320x256
 % if binning = 1, max ROI: 1280x1024
 params.binning     = 4; % first thing decide 
-params.frameRate   = 10;
+params.frameRate   = 180;
 params.ROIposition  = [0 0 310 230]; %resolution 0,0,800,600 for LR box only.310 230 for binned=4
-params.exposureTime = 100;            % min 34ms
-params.saveVideo_frameRate  = 10; % frame rate to save video (=1 for slowmo to see framdrop)
+params.exposureTime = 1500;            % min 34ms
+params.saveVideo_frameRate  = 180; % frame rate to save video (=1 for slowmo to see framdrop)
 startPupilDataRecording_head_twitch(save_path, params)
 
 %%
