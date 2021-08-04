@@ -22,7 +22,7 @@
     bpH = 110; % Higher limit of the band-pass filter (Hz)
 
     % HTR detection parameters
-    nSD = 35; % Number of standard deviations (SD) for threshold (multiplier)
+    nSD = 70; % Number of standard deviations (SD) for threshold (multiplier)
     Ttv = 0.225; % Top threshold value (V)
     mpd = 3000; % Minimum distance between events (ms)
     Mpw = 1000; % Maximum width of an event (ms)
