@@ -76,7 +76,7 @@
     X='The time points of the head twitches for Box 1 are:';
     disp(X);
     disp(t);
-    save data.mat data
+    %save data.mat data
     % To load the data on a different computer, type load('data.mat').
     % Make sure not to overwrite the data.mat file (i.e., don't re-run the
     % DAQ until the data.mat file has been exported).
@@ -129,7 +129,7 @@
     X_2='The time points of the head twitches for Box 2 are:';
     disp(X_2);
     disp(t_2);
-    save data.mat data 
+    %save data.mat data 
     % To load the data on a different computer, type load('data.mat').
     % Make sure not to overwrite the data.mat file (i.e., don't re-run the
     % DAQ until the data.mat file has been exported).
@@ -182,7 +182,7 @@
     X_3='The time points of the head twitches for Box 3 are:';
     disp(X_3);
     disp(t_3);
-    save data.mat data
+    %save data.mat data
     % To load the data on a different computer, type load('data.mat').
     % Make sure not to overwrite the data.mat file (i.e., don't re-run the
     % DAQ until the data.mat file has been exported).
